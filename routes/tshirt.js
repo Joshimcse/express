@@ -32,6 +32,36 @@ module.exports = (app) => {
 
 
     /**
+     * Find and retrives a single tshirt by its ID
+     * @param {Object} req HTTP request object.
+     * @param {Object} res HTTP response object.
+     */
+    findById = (req, res) => {
+        console.log("GET - /tshirt/:id");
+        return Tshirt.findById(req.params.id, (err, tshirt) => {
+            if (!tshirt) {
+                res.statusCode = 404;
+                return res.send({
+                    error: 'Not found'
+                });
+            }
+            if (!err) {
+                return res.send({
+                    status: 'OK',
+                    tshirt: tshirt
+                });
+            } else {
+                res.statusCode = 500;
+                console.log('Internal error(%d): %s', res.statusCode, err.message);
+                return res.send({
+                    error: 'Server error'
+                });
+            }
+        });
+    }
+
+
+    /**
      * Creates a new tshirt from the data request
      * @param {Object} req HTTP request object.
      * @param {Object} res HTTP response object.
@@ -64,5 +94,6 @@ module.exports = (app) => {
     }
 
     app.get('/tshirt', findAllTshirt);
+    app.get('/tshirt/:id', findById);
     app.post('/tshirt', addTshirt);
 }
